@@ -21,8 +21,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "admin", "deliveryBoy"],
     required: true
+  },
+
+  // for forget password functionality
+  resetotp: {
+    type: String
+
+  },
+  isotpverified: {
+    type: Boolean,
+    default: false
+  },
+  otpExpire: {
+    type: Date
   }
-});
+
+
+},{timestamps: true});
 
 const User = mongoose.model("User", userSchema);
 export default User;

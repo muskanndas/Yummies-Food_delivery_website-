@@ -23,19 +23,24 @@ const SignIn = () => {
 
  //fetch sign up controller
 
-  const handelSignIn = async()=>{
-    try {
-      const result = await axios.post(`${serverUrl}/api/auth/signin`, {
-        email,
-        password,
-      },{withCredentials:true});
-      console.log("Sign In successful:", result.data);
-      
-    } catch (error) {
+const handelSignIn = async () => {
+  try {
+    const result = await axios.post(
+      `${serverUrl}/api/auth/signin`,
+      { email, password },
+      { withCredentials: true }
+    );
+
+    console.log("Sign In successful:", result.data);
+
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      alert("Write correct password");
+    } else {
       console.error("Sign In failed:", error);
     }
   }
-
+};
   return (
     <>
       <div
