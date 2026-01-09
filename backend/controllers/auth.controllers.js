@@ -173,3 +173,34 @@ export const sendOtp = async(req, res) => {
       return res.status(500).json({ message: "Error in resetting password", error: error.message });
     }
   };
+
+
+  //controller for google authentication 
+  export const googleAuth = async (req, res) => {
+    try {
+      const { fullName,email,mobile,role } = req.body;
+      let user  = await User.findOne({email});
+      //case-1 user does not exist->Sign Up
+      if(!user){
+         user = await User.create({
+          fullName,email,mobile,role
+         });
+        }
+
+      //case-2 user exists->sign in 
+          // generate token 
+    const token  = await generateToken(user._id);
+
+    //parse token in cookie
+    res.cookie("token", token, { 
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+      return res.status(201).json(user);
+      
+    } catch (error) {
+      return res.status(500).json({ message: " Error in google authentication", error})
+    }
+  };

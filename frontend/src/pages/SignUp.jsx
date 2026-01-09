@@ -7,6 +7,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
   const hoverColor = "#e64323";
@@ -40,6 +42,25 @@ const SignUp = () => {
     }
   }
 
+  //sign up with google
+  const handleGoogleAuth = async () => {
+    if(!mobile){
+       return alert("mobile number is required");
+    }
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth,provider);
+    //fecth api
+    try {
+      const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
+        fullName: result.user.displayName ,
+        email: result.user.email,
+        mobile,role},{withCredentials:true})
+        console.log("Sign up with google successful:", data);
+      }
+    catch (error) {
+       console.error(error);
+    }
+  }
   return (
     <>
       <div
@@ -71,7 +92,7 @@ const SignUp = () => {
               id="fullName"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
               placeholder="Enter your full name"
-              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setFullName(e.target.value)} value={fullName}
+              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setFullName(e.target.value)} value={fullName} required
             />
           </div>
 
@@ -88,7 +109,7 @@ const SignUp = () => {
               id="email"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
               placeholder="Enter your email"
-              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setEmail(e.target.value)} value={email}
+              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setEmail(e.target.value)} value={email} required
             />
           </div>
 
@@ -105,7 +126,7 @@ const SignUp = () => {
               id="mobile"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
               placeholder="Enter your mobile number"
-              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setMobileNumber(e.target.value)} value={mobile}
+              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setMobileNumber(e.target.value)} value={mobile} required
             />
           </div>
 
@@ -124,7 +145,7 @@ const SignUp = () => {
                 id="password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
                 placeholder="Enter your password"
-                style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setPassword(e.target.value)} value={password}
+                style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setPassword(e.target.value)} value={password} required
               />
               <button
                 className="absolute right-3 top-3 cursor-pointer text-gray-500"
@@ -174,7 +195,7 @@ const SignUp = () => {
 
           {/* signup with google*/}
         <button className="w-full mt-4 flex 
-        justify-center items-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-200 hover:bg-gray-100">
+        justify-center items-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-200 hover:bg-gray-100" onClick={handleGoogleAuth}>
           <FcGoogle size={20} />
           <span>Sign up with Google</span>
         </button>

@@ -7,6 +7,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 const SignIn = () => {
   const primaryColor = "#ff4d2d";
   const hoverColor = "#e64323";
@@ -41,6 +43,22 @@ const handelSignIn = async () => {
     }
   }
 };
+
+//sign up with google
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth,provider);
+    //fecth api
+    try {
+      const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
+        email: result.user.email,
+        },{withCredentials:true})
+        console.log("SignIn google successful:", data);
+      }
+    catch (error) {
+       console.error(error);
+    }
+  };
   return (
     <>
       <div
@@ -73,8 +91,7 @@ const handelSignIn = async () => {
               id="email"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
               placeholder="Enter your email"
-              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setEmail(e.target.value)} value={email}
-            />
+              style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setEmail(e.target.value)} value={email} required  />
           </div>
 
 
@@ -93,7 +110,7 @@ const handelSignIn = async () => {
                 id="password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
                 placeholder="Enter your password"
-                style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setPassword(e.target.value)} value={password}
+                style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setPassword(e.target.value)} value={password} required
               />
               <button
                 className="absolute right-3 top-3 cursor-pointer text-gray-500"
@@ -121,7 +138,7 @@ const handelSignIn = async () => {
 
           {/* signin with google*/}
         <button className="w-full mt-4 flex 
-        justify-center items-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-200 hover:bg-gray-100">
+        justify-center items-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-200 hover:bg-gray-100" onClick={handleGoogleAuth}>
           <FcGoogle size={20} />
           <span>Sign In with Google</span>
         </button>

@@ -118,6 +118,7 @@ const ForgotPassword = () => {
                 style={{ border: `1px solid ${borderColor}` }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
 
               <button
@@ -141,7 +142,7 @@ const ForgotPassword = () => {
                 placeholder="Enter your OTP"
                 style={{ border: `1px solid ${borderColor}` }}
                 value={otp}
-                onChange={(e) => setOTP(e.target.value)}
+                onChange={(e) => setOTP(e.target.value)} required
               />
               <p className="text-sm text-gray-500 mt-1">
                 OTP expires in:{" "}
@@ -171,6 +172,7 @@ const ForgotPassword = () => {
                   style={{ border: `1px solid ${borderColor}` }}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  required
                 />
 
                 <button
@@ -192,7 +194,7 @@ const ForgotPassword = () => {
                   placeholder="Confirm password"
                   style={{ border: `1px solid ${borderColor}` }}
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value)} required
                 />
 
                 <button
