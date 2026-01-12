@@ -7,6 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
+import { ClipLoader } from "react-spinners"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 const SignIn = () => {
@@ -22,29 +23,33 @@ const SignIn = () => {
  const [email, setEmail] = useState("");
  
  const [password, setPassword] = useState("");
-
+ const [err, setErr] = useState("");
+const [loading, setloading] = useState(false);
  //fetch sign up controller
 
 const handelSignIn = async () => {
+  setloading(true);
   try {
     const result = await axios.post(
       `${serverUrl}/api/auth/signin`,
       { email, password },
       { withCredentials: true }
+      
     );
-
-    console.log("Sign In successful:", result.data);
-
+   console.log("Sign In successful:", result.data);
+    setErr("");
+    setloading(false);
   } catch (error) {
     if (error.response && error.response.status === 400) {
       alert("Write correct password");
     } else {
-      console.error("Sign In failed:", error);
+      setErr(error?.response?.data?.message);
+      setloading(false);
     }
   }
 };
 
-//sign up with google
+//sign in with google
   const handleGoogleAuth = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth,provider);
@@ -132,9 +137,11 @@ const handelSignIn = async () => {
           
           {/* signin buttom*/}
           <button className={`w-full font-semibold py-2 rounded-lg  transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handelSignIn}
-           >
-            SignIn
+          disabled={loading}>
+                      {loading?<ClipLoader size={20} color="white" />: "SignIn"}
+            
           </button>
+           {err &&  <p className="text-red-500 text-center my-[10px]">*{err}</p>}
 
           {/* signin with google*/}
         <button className="w-full mt-4 flex 

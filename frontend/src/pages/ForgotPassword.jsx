@@ -5,7 +5,7 @@ import { TbEyeClosed } from "react-icons/tb";
 import { FaEye } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
-
+import { ClipLoader } from "react-spinners"
 const ForgotPassword = () => {
   const borderColor = "#ddd";
   const navigate = useNavigate();
@@ -17,7 +17,8 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const [err, setErr] = useState("");
+const [loading, setloading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
 
   // timer for otp expiration
@@ -40,6 +41,7 @@ const ForgotPassword = () => {
 
   //fecth controller for fogot password functionality
   const handleSendotp = async () => {
+    setloading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
@@ -47,14 +49,18 @@ const ForgotPassword = () => {
         { withCredentials: true }
       );
       console.log(result);
+      setErr("");
       setTimeLeft(300);
       setStep(2);
+      setloading(false);
     } catch (error) {
-      console.error("Error in sending OTP: ", error);
+       setErr(error?.response?.data?.message);
+       setloading(false);
     }
   };
 
   const handleVerifyotp = async () => {
+    setloading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
@@ -62,9 +68,12 @@ const ForgotPassword = () => {
         { withCredentials: true }
       );
       console.log(result);
+      setErr("");
       setStep(3);
+      setloading(false);
     } catch (error) {
-      console.error("Error in verifying OTP: ", error);
+       setErr(error?.response?.data?.message);
+       setloading(false);
     }
   };
 
@@ -80,10 +89,11 @@ const ForgotPassword = () => {
         { withCredentials: true }
       );
       console.log(result);
+      setErr("");
      alert("Password reset successful");
     navigate("/signin");
     } catch (error) {
-      console.error("Error in sending OTP: ", error);
+       setErr(error?.response?.data?.message);
     }
   };
   return (
@@ -123,10 +133,11 @@ const ForgotPassword = () => {
 
               <button
                 className="w-full font-semibold py-2 mt-4 rounded-lg bg-[#ff4d2d] text-white hover:bg-[#e64323]"
-                onClick={handleSendotp}
+                onClick={handleSendotp} disabled = {loading}
               >
-                Send OTP
+                {loading? <ClipLoader size={20} color="white"/> : "Send OTP"}
               </button>
+              {err &&  <p className="text-red-500 text-center my-[10px]">*{err}</p>}
             </div>
           )}
 
@@ -151,10 +162,11 @@ const ForgotPassword = () => {
 
               <button
                 className="w-full font-semibold py-2 mt-4 rounded-lg bg-[#ff4d2d] text-white hover:bg-[#e64323]"
-                onClick={handleVerifyotp}
+                onClick={handleVerifyotp} disabled = {loading}
               >
-                Verify
+                {loading? <ClipLoader size={20} color="white"/> : "Verify"}
               </button>
+              {err &&  <p className="text-red-500 text-center my-[10px]">*{err}</p>}
             </div>
           )}
 
@@ -209,9 +221,11 @@ const ForgotPassword = () => {
               <button
                 className="w-full font-semibold py-2 mt-4 rounded-lg bg-[#ff4d2d] text-white hover:bg-[#e64323]"
                 onClick={handleResetPassword}
+              disabled = {loading}
               >
-                Reset Password
+                {loading? <ClipLoader size={20} color="white"/> : "Reset Password"}
               </button>
+              {err &&  <p className="text-red-500 text-center my-[10px]">*{err}</p>}
             </div>
           )}
         </div>

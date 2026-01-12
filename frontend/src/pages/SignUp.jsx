@@ -9,6 +9,7 @@ import { serverUrl } from "../App";
 import axios from "axios";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners"
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
   const hoverColor = "#e64323";
@@ -23,10 +24,14 @@ const SignUp = () => {
  const [email, setEmail] = useState("");
  const [mobile, setMobileNumber] = useState("");
  const [password, setPassword] = useState("");
+const [loading, setloding] = useState(false);
+ const [err, setErr] = useState("");
+
 
  //fetch sign up controller
 
   const handelSignUp = async()=>{
+    setloding(true);
     try {
       const result = await axios.post(`${serverUrl}/api/auth/signup`, {
         fullName,
@@ -36,16 +41,18 @@ const SignUp = () => {
         role
       },{withCredentials:true});
       console.log("Sign up successful:", result.data);
-      
+      setErr("");
+      setloding(false);
     } catch (error) {
-      console.error("Sign up failed:", error);
+      setErr(error?.response?.data?.message);
+      setloding(false);
     }
   }
 
   //sign up with google
   const handleGoogleAuth = async () => {
     if(!mobile){
-       return alert("mobile number is required");
+       return setErr("mobile number is required");
     }
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth,provider);
@@ -188,10 +195,12 @@ const SignUp = () => {
           </div>
 
           {/* signup buttom*/}
-          <button className={`w-full font-semibold py-2 rounded-lg  transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handelSignUp}
-           >
-            SignUp
+          <button className={`w-full font-semibold py-2 rounded-lg  transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handelSignUp} disabled={loading}>
+            {loading?<ClipLoader size={20} color="white" />: "SignUp"}
+           
           </button>
+          {err &&  <p className="text-red-500 text-center my-[10px]">*{err}</p>}
+          
 
           {/* signup with google*/}
         <button className="w-full mt-4 flex 

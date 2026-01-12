@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin", "deliveryBoy"],
     required: true
   },
-
   // for forget password functionality
   resetotp: {
     type: String
