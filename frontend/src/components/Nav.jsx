@@ -1,0 +1,232 @@
+import React, { useState } from "react";
+import { IoLocationSharp } from "react-icons/io5";
+import { IoIosSearch } from "react-icons/io";
+import { CiShoppingCart } from "react-icons/ci";
+import { RxCross2 } from "react-icons/rx";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { serverUrl } from "../App";
+import { setUserData } from "../redux/userSlice";
+
+const Nav = () => {
+  const yellow = "#E6B800";
+  const red = "#C93B2B";
+  const { userdata, city } = useSelector((state) => state.userinfo);
+console.log("City from Redux in Nav:", city); 
+  const [showPopup, setShowPopup] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const dispatch = useDispatch();
+
+  //fetching signout controller
+  const handleLogout = async () => {
+  try {
+    const result = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true });
+    dispatch(setUserData(null));
+  } catch (error) {
+    console.error("Error during signout:", error);
+  }
+  };
+  return (
+    <div
+      className="
+      w-full h-[80px]
+      flex items-center justify-between md:justify-center
+      gap-[30px] px-[20px]
+      fixed top-0 z-[9999]
+      bg-[#fff9f6]
+      mt-[20px]
+      overflow-visible
+    "
+    >
+      {/* MOBILE SEARCH BAR */}
+      {showSearch && (
+        <div
+          className="
+          w-[90%]
+          h-[70px]
+          flex
+          fixed
+          top-[80px]
+          left-[5%]
+          bg-white
+          shadow-xl
+          rounded-lg
+          items-center gap-[20px]
+          z-[9998]
+          md:hidden 
+        "
+        >
+          {/* Location mobile*/}
+          <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
+            <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
+            <div className="w-[80%] truncate text-gray-600">{city}</div>
+            
+          </div>
+            
+          {/* Search Input mobile*/}
+          <div className="w-[80%] flex items-center gap-[10px]">
+            <IoIosSearch style={{ color: "#C93B2B", fontSize: "30px" }} />
+            <input
+              type="text"
+              placeholder="Search your favourite food..."
+              className="w-full bg-transparent outline-none text-gray-700"
+              autoFocus
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Logo same for mobile and desktop */}
+      <h1 className="text-3xl font-bold mb-2 flex justify-center">
+        <span style={{ color: red }}>Yumm</span>
+        <span style={{ color: yellow }}>!es</span>
+      </h1>
+
+      {/* Desktop Search Box */}
+      <div
+        className="
+        md:w-[60%] lg:w-[40%]
+        h-[70px]
+        bg-white
+        shadow-xl
+        rounded-lg
+        md:flex hidden items-center gap-[20px]
+      "
+      >
+         {/* Location (Desktop) */}
+        <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
+          <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
+          <div className="w-[80%] truncate text-gray-600">
+            {city || "Detecting..."}
+          </div>
+        </div>
+        {/* Search Input (Desktop) */}
+        <div className="w-[80%] flex items-center gap-[10px]">
+          <IoIosSearch style={{ color: "#C93B2B", fontSize: "30px" }} />
+          <input
+            type="text"
+            placeholder="Search your favourite food..."
+            className="w-full bg-transparent outline-none text-gray-700"
+          />
+        </div>
+      </div>
+
+      {/* RIGHT SECTION (icons, cart, profile) */}
+      <div className="flex items-center gap-4">
+        {/*  Mobile Search Icon / Cross */}
+        {showSearch ? (
+          <RxCross2
+            style={{ color: "#C93B2B", fontSize: "30px" }}
+            className="md:hidden cursor-pointer"
+            onClick={() => setShowSearch(false)}
+          />
+        ) : (
+          <IoIosSearch
+            style={{ color: "#C93B2B", fontSize: "30px" }}
+            className="md:hidden cursor-pointer"
+            onClick={() => {
+              setShowSearch(true);
+              setShowPopup(false);
+            }}
+          />
+        )}
+
+        {/* Cart Icon */}
+        <div className="relative cursor-pointer">
+          <CiShoppingCart style={{ color: "#C93B2B", fontSize: "40px" }} />
+          <span
+            className="
+            absolute 
+            -top-1 
+            -right-1 
+            bg-[#C93B2B] 
+            text-white 
+            text-xs 
+            font-bold
+            rounded-full
+            px-1
+          "
+          >
+            0
+          </span>
+        </div>
+
+        {/* My Order  (Desktop only) */}
+        <button
+          className="
+          hidden md:block 
+          px-6 py-3 
+          rounded-full 
+          border 
+          border-[#C93B2B] 
+          bg-[#ff4d2d]/10 
+          text-[#C93B2B]
+          text-base 
+          font-semibold
+        "
+        >
+          My Order
+        </button>
+
+        {/* User Icon */}
+        <div
+          className="
+          w-10 
+          h-10 
+          rounded-full 
+          bg-[#C93B2B]
+          text-white 
+          flex 
+          items-center 
+          justify-center 
+          text-lg 
+          font-bold
+          cursor-pointer
+        "
+          onClick={() => {
+            setShowPopup((prev) => !prev); // toggle popup
+            setShowSearch(false);          // close search bar
+          }}
+        >
+          {userdata?.fullName?.slice(0, 1).toUpperCase()}
+        </div>
+
+        {/* Profile Popup (mobile + desktop)*/}
+        {showPopup && (
+          <div
+            className="
+            fixed 
+            top-[80px] 
+            right-[10px] 
+            md:right-[10%] 
+            lg:right-[25%] 
+            w-[180px] 
+            bg-white 
+            shadow-2xl 
+            rounded-xl 
+            p-[20px] 
+            flex 
+            flex-col 
+            gap-[10px] 
+            z-[9999]
+          "
+          >
+            <div className="text-[17px] font-semibold">
+              {userdata?.fullName}
+            </div>
+
+            <div className="md:hidden text-[#C93B2B] font-semibold cursor-pointer">
+              My Orders
+            </div>
+
+            <div className="text-[#C93B2B] font-semibold cursor-pointer">
+              Logout
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Nav;
