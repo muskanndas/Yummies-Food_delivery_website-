@@ -12,7 +12,7 @@ const useGetCity = () => {
   useEffect(() => {
     
       navigator.geolocation.getCurrentPosition(async (position) => {
-        console.log(position);
+        // console.log(position);
 
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -21,8 +21,8 @@ const useGetCity = () => {
   `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${geoApiKey}`
 );
            //fetching city data 
-        //  console.log("City Data:", result?.data?.results[0].city);
-          dispatch(setCity(result?.data?.results[0].city));
+        // console.log("City Data:", result?.data?.results[0].city);
+         dispatch(setCity(result?.data?.results[0].city));
           
           
         } catch (error) {

@@ -5,10 +5,9 @@ const UserDashBoard = () => {
   console.log("UserDashBoard rendered");
   return (
     <>
-      <Nav />
-      {/* <div className=" font-semibold">
-        Welcome User Dashboard
-      </div> */}
+      <div className='w-full min-h-screen bg-[#fff9f6] flex flex-col items-center'>
+       <Nav/>
+    </div>
     </>
   );
 };

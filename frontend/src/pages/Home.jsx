@@ -6,12 +6,14 @@ import AdminDashBoard from '../components/AdminDashBoard';
 
 const Home = () => {
   const {userdata} = useSelector((state) => state.userinfo);
-  // console.log(userdata);
+//   console.log(userdata);
+//   console.log("HOME RENDERED");
+// console.log("Home userdata:", userdata);
   return (
     <div className='w-[100vw] min-h-[100vh] pt-[100px] flex flex-col items-center bg-[#fff9f6] '>
       {userdata?.role == "user" && <UserDashBoard/>}
       {userdata?.role == "admin" && <AdminDashBoard/>}
-      {userdata?.role == "deliveryboy" && <DeliveryBoyDashBoard/>} 
+      {userdata?.role == "deliveryBoy" && <DeliveryBoyDashBoard/>} 
     </div>
   )
 }

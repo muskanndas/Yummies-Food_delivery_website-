@@ -7,25 +7,36 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
+import { GoPlus } from "react-icons/go";
 
 const Nav = () => {
   const yellow = "#E6B800";
   const red = "#C93B2B";
+
+  //getting user data and city from redux store
   const { userdata, city } = useSelector((state) => state.userinfo);
-console.log("City from Redux in Nav:", city); 
+
+  // console.log(userdata, city);
+
   const [showPopup, setShowPopup] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const dispatch = useDispatch();
 
+  //extra check
+  if (!userdata) return null;
+
   //fetching signout controller
   const handleLogout = async () => {
-  try {
-    const result = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true });
-    dispatch(setUserData(null));
-  } catch (error) {
-    console.error("Error during signout:", error);
-  }
+    try {
+      const result = await axios.get(`${serverUrl}/api/auth/signout`, {
+        withCredentials: true,
+      });
+      dispatch(setUserData(null));
+    } catch (error) {
+      console.error("Error during signout:", error);
+    }
   };
+
   return (
     <div
       className="
@@ -38,8 +49,8 @@ console.log("City from Redux in Nav:", city);
       overflow-visible
     "
     >
-      {/* MOBILE SEARCH BAR */}
-      {showSearch && (
+      {/* =======MOBILE SEARCH BAR======*/}
+      {showSearch && userdata.role === "user" && (
         <div
           className="
           w-[90%]
@@ -56,20 +67,21 @@ console.log("City from Redux in Nav:", city);
           md:hidden 
         "
         >
-          {/* Location mobile*/}
-          <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
+          {/* Location (mobile)*/}
+          <div className="flex items-center w-[45%] gap-[10px] px-[10px] border-r-[2px] border-gray-400">
             <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
-            <div className="w-[80%] truncate text-gray-600">{city}</div>
-            
+            <div className="text-gray-600 whitespace-normal break-words">
+              {city || "Detecting..."}
+            </div>
           </div>
-            
-          {/* Search Input mobile*/}
-          <div className="w-[80%] flex items-center gap-[10px]">
+
+          {/* Search Input (mobile)*/}
+          <div className="flex-1 flex items-center gap-[10px] pr-[10px]">
             <IoIosSearch style={{ color: "#C93B2B", fontSize: "30px" }} />
             <input
               type="text"
-              placeholder="Search your favourite food..."
-              className="w-full bg-transparent outline-none text-gray-700"
+              placeholder="Search delicious food..."
+              className="w-full bg-transparent outline-none text-gray-700 whitespace-normal"
               autoFocus
             />
           </div>
@@ -82,9 +94,11 @@ console.log("City from Redux in Nav:", city);
         <span style={{ color: yellow }}>!es</span>
       </h1>
 
-      {/* Desktop Search Box */}
-      <div
-        className="
+       {/* ================= DESKTOP SEARCH (USER ONLY) ================= */}
+      {userdata?.role == "user" &&
+        (
+          <div
+            className="
         md:w-[60%] lg:w-[40%]
         h-[70px]
         bg-white
@@ -92,50 +106,75 @@ console.log("City from Redux in Nav:", city);
         rounded-lg
         md:flex hidden items-center gap-[20px]
       "
-      >
-         {/* Location (Desktop) */}
-        <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
-          <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
-          <div className="w-[80%] truncate text-gray-600">
-            {city || "Detecting..."}
+          >
+            {/* Location (Desktop) */}
+            <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
+              <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
+              <div className="w-[80%] truncate text-gray-600">
+                {city || "Detecting..."}
+              </div>
+            </div>
+
+
+            {/* Search Input (Desktop) */}
+            <div className="w-[80%] flex items-center gap-[10px]">
+              <IoIosSearch style={{ color: "#C93B2B", fontSize: "30px" }} />
+              <input
+                type="text"
+                placeholder="Search your favourite food..."
+                className="w-full bg-transparent outline-none text-gray-700"
+              />
+            </div>
           </div>
-        </div>
-        {/* Search Input (Desktop) */}
-        <div className="w-[80%] flex items-center gap-[10px]">
-          <IoIosSearch style={{ color: "#C93B2B", fontSize: "30px" }} />
-          <input
-            type="text"
-            placeholder="Search your favourite food..."
-            className="w-full bg-transparent outline-none text-gray-700"
-          />
-        </div>
-      </div>
+        )}
 
       {/* RIGHT SECTION (icons, cart, profile) */}
       <div className="flex items-center gap-4">
-        {/*  Mobile Search Icon / Cross */}
-        {showSearch ? (
-          <RxCross2
-            style={{ color: "#C93B2B", fontSize: "30px" }}
-            className="md:hidden cursor-pointer"
-            onClick={() => setShowSearch(false)}
-          />
-        ) : (
-          <IoIosSearch
-            style={{ color: "#C93B2B", fontSize: "30px" }}
-            className="md:hidden cursor-pointer"
-            onClick={() => {
-              setShowSearch(true);
-              setShowPopup(false);
-            }}
-          />
+        {/* Mobile Search Icon (User only) */}
+        {userdata.role === "user" && (
+          <>
+            {showSearch ? (
+              <RxCross2
+                style={{ color: "#C93B2B", fontSize: "30px" }}
+                className="md:hidden cursor-pointer"
+                onClick={() => setShowSearch(false)}
+              />
+            ) : (
+              <IoIosSearch
+                style={{ color: "#C93B2B", fontSize: "30px" }}
+                className="md:hidden cursor-pointer"
+                onClick={() => {
+                  setShowSearch(true);
+                  setShowPopup(false);
+                }}
+              />
+            )}
+          </>
         )}
+  
+        {/* ================= ADMIN BUTTON ================= */}
+        {/* Add Food Item (Admin only) */}
+        {userdata?.role == "admin" ? (
+          <>
+            {/* Desktop Add Food Item Button */}
+            <button className=" hidden md:flex items-center curser-pointer gap-1 px-4 py-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
+              <GoPlus size={20} />
+              <span>Add Food Item</span>
+            </button>
 
-        {/* Cart Icon */}
-        <div className="relative cursor-pointer">
-          <CiShoppingCart style={{ color: "#C93B2B", fontSize: "40px" }} />
-          <span
-            className="
+            {/* Mobile Add Food Item Button */}
+            <button className="md:hidden flex items-center curser-pointer p-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
+              <GoPlus size={20} />
+            </button>
+          </>
+        ) : (
+          <>
+            {/* Cart Icon */}
+
+            <div className="relative cursor-pointer">
+              <CiShoppingCart style={{ color: "#C93B2B", fontSize: "40px" }} />
+              <span
+                className="
             absolute 
             -top-1 
             -right-1 
@@ -146,14 +185,14 @@ console.log("City from Redux in Nav:", city);
             rounded-full
             px-1
           "
-          >
-            0
-          </span>
-        </div>
+              >
+                0
+              </span>
+            </div>
 
-        {/* My Order  (Desktop only) */}
-        <button
-          className="
+            {/* My Order  (Desktop only) */}
+            <button
+              className="
           hidden md:block 
           px-6 py-3 
           rounded-full 
@@ -164,10 +203,13 @@ console.log("City from Redux in Nav:", city);
           text-base 
           font-semibold
         "
-        >
-          My Order
-        </button>
+            >
+              My Order
+            </button>
+          </>
+        )}
 
+     {/* ================= PROFILE CIRCLE ================= */}
         {/* User Icon */}
         <div
           className="
@@ -185,10 +227,11 @@ console.log("City from Redux in Nav:", city);
         "
           onClick={() => {
             setShowPopup((prev) => !prev); // toggle popup
-            setShowSearch(false);          // close search bar
+            setShowSearch(false); // close search bar
           }}
         >
-          {userdata?.fullName?.slice(0, 1).toUpperCase()}
+          {/* {userdata?.fullName?.slice(0, 1).toUpperCase()} */}
+          {userdata?.fullName ? userdata.fullName.charAt(0).toUpperCase() : ""}
         </div>
 
         {/* Profile Popup (mobile + desktop)*/}
@@ -219,7 +262,10 @@ console.log("City from Redux in Nav:", city);
               My Orders
             </div>
 
-            <div className="text-[#C93B2B] font-semibold cursor-pointer">
+            <div
+              className="text-[#C93B2B] font-semibold cursor-pointer"
+              onClick={handleLogout}
+            >
               Logout
             </div>
           </div>
