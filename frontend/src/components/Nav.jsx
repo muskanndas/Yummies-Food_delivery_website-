@@ -8,19 +8,25 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 import { GoPlus } from "react-icons/go";
+import { IoNotificationsOutline } from "react-icons/io5";
+
 
 const Nav = () => {
   const yellow = "#E6B800";
   const red = "#C93B2B";
 
   //getting user data and city from redux store
-  const { userdata, city } = useSelector((state) => state.userinfo);
-
+  const { userdata, currentCity } = useSelector((state) => state.userinfo);
   // console.log(userdata, city);
+ const { myshopdata } = useSelector((state) => state.admininfo);
 
   const [showPopup, setShowPopup] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+    const [orderCount, setOrderCount] = useState(0); 
+    // Temporary value (replace later with backend data)
   const dispatch = useDispatch();
+
+
 
   //extra check
   if (!userdata) return null;
@@ -71,7 +77,7 @@ const Nav = () => {
           <div className="flex items-center w-[45%] gap-[10px] px-[10px] border-r-[2px] border-gray-400">
             <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
             <div className="text-gray-600 whitespace-normal break-words">
-              {city || "Detecting..."}
+              {currentCity|| "Detecting..."}
             </div>
           </div>
 
@@ -111,7 +117,7 @@ const Nav = () => {
             <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
               <IoLocationSharp style={{ color: "#C93B2B", fontSize: "30px" }} />
               <div className="w-[80%] truncate text-gray-600">
-                {city || "Detecting..."}
+                {currentCity || "Detecting..."}
               </div>
             </div>
 
@@ -154,23 +160,63 @@ const Nav = () => {
   
         {/* ================= ADMIN BUTTON ================= */}
         {/* Add Food Item (Admin only) */}
-        {userdata?.role == "admin" ? (
+        {userdata?.role === "admin" ? (
           <>
-            {/* Desktop Add Food Item Button */}
-            <button className=" hidden md:flex items-center curser-pointer gap-1 px-4 py-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
+          {myshopdata && <>
+           {/* Desktop Add Food Item Button */}
+            <button className=" hidden md:flex items-center cursor-pointer gap-1 px-4 py-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
               <GoPlus size={20} />
               <span>Add Food Item</span>
             </button>
 
             {/* Mobile Add Food Item Button */}
-            <button className="md:hidden flex items-center curser-pointer p-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
+            <button className="md:hidden flex items-center cursor-pointer p-2 rounded-full border border-[#C93B2B] bg-[#ff4d2d]/10 text-[#C93B2B] text-base font-semibold">
               <GoPlus size={20} />
             </button>
+          </>}
+           
+
+             {/* Notifications Icon <div className="hidden md:flex items-center gap-2 cursor-pointer relative p-2 rounded-full bg-[#ff4d2d]/10 border border-[#C93B2B] text-[#C93B2B] text-base font-semibold"> <IoNotificationsOutline size={20}/> <span>Orders</span><span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#C93B2B] rounded-full px-[6px] py-[1px]" >0</span> </div>
+             
+              <div className="md:hidden flex items-center gap-2 cursor-pointer relative p-2 rounded-full bg-[#ff4d2d]/10 border border-[#C93B2B] text-[#C93B2B] text-base font-semibold"> <IoNotificationsOutline size={20}/> <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#C93B2B] rounded-full px-[6px] py-[1px]" >0</span> </div>
+             */}
+
+
+            {/* 🔔 Bell Notification */}
+<div className="relative cursor-pointer flex items-center">
+
+  <IoNotificationsOutline
+    className="text-[#C93B2B] bell-animation 
+               w-7 h-7 
+               sm:w-8 sm:h-15
+               md:w-8 md:h-8"
+  />
+
+  {orderCount > 0 && (
+    <span className="
+      absolute 
+      -top-1 -right-1 
+      sm:-top-2 sm:-right-2
+      bg-[#C93B2B] 
+      text-white 
+      text-[8px] 
+      sm:text-[10px]
+      font-bold 
+      px-1 
+      sm:px-1.5 
+      py-[1px] 
+      rounded-full
+    ">
+      {orderCount > 99 ? "99+" : orderCount}
+    </span>
+  )}
+</div>
+
+
           </>
         ) : (
           <>
             {/* Cart Icon */}
-
             <div className="relative cursor-pointer">
               <CiShoppingCart style={{ color: "#C93B2B", fontSize: "40px" }} />
               <span

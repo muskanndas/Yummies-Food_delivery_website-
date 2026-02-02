@@ -1,31 +1,48 @@
-import Shop from "../models/shop.model";
+import Shop from "../models/shop.model.js";
+import uploadToCloudinary from "../utils/cloudinary.js";
 
 //{/*create shop controller*/}
 export const createEditShop = async (req, res) => {
   try {
     const { name, city, state, address } = req.body;
+     let shop = await Shop.findOne({ owner: req.userId });
     let image;
     if (req.file) {
       image = await uploadToCloudinary(req.file.path);
     }
     //find if shop exists then edit not create or if not then create new shop
-    let shop = await Shop.findOne({ owner: req.user._id });//Shop.findOne({ owner: req.userId });
+    
     if (!shop) {
+      if (!image) {
+        return res.status(400).json({ message: "Image is required" });
+      }
        shop = await Shop.create({
         name,
         city,
         state,
         address,
         image,
-        owner: req.user._id
+        owner: req.userId
       })
     } else {
-      shop= await Shop.findByIdAndUpdate(
-        shop._id,
-        { name, city, state, address, image , owner: req.user._id },
-        { new: true }
-      );
-    }
+
+  let updatedData = {
+    name,
+    city,
+    state,
+    address
+  };
+
+  if (image) {
+    updatedData.image = image;
+  }
+
+  shop = await Shop.findByIdAndUpdate(
+    shop._id,
+    updatedData,
+    { new: true }
+  );
+}
       await shop.populate("owner");
       return res.status(201).json(shop);
   } catch (error) {
@@ -34,3 +51,17 @@ export const createEditShop = async (req, res) => {
 };
 
 
+//{/*get myshop controller*/}
+export const getMyShop = async (req, res) => {
+  try {
+    const shop = await Shop.findOne({ owner: req.userId }).populate("owner items");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found"});
+    }
+
+    return res.status(200).json(shop);
+   
+  } catch (error) {
+    return res.status(500).json({ message: "Error in getting my shop", error: error.message });
+  }
+};
