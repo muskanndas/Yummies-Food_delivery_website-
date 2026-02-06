@@ -1,21 +1,37 @@
 import React from "react";
 
-const CategoryCard =({ name, image, onClick })=> {
+const CategoryCard = ({ name, image, onClick }) => {
   return (
     <div
-      className="w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-2xl border-2 border-[#ff4d2d] shrink-0 overflow-hidden bg-white shadow-xl shadow-gray-200 hover:shadow-lg transition-shadow relative"
       onClick={onClick}
+      
+      /* Increased box size and improved styling */
+      className="group relative 
+      w-[200px] h-[200px] md:w-[240px] md:h-[240px]   
+      rounded-3xl border border-gray-200             
+      shrink-0 overflow-hidden bg-white
+      shadow-lg hover:shadow-2xl                     
+      transition-all duration-500 ease-in-out
+      hover:-translate-y-2 cursor-pointer"
     >
       <img
         src={image}
         alt=""
-        className=" w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
+        className="w-full h-full object-cover
+        transition-transform duration-700 ease-in-out
+        group-hover:scale-110"   /* smooth zoom on hover */
       />
-      <div className="absolute  bottom-0 w-full left-0  bg-[#ffffff96] bg-opacity-95 px-3 py-1 rounded-t-xl text-center shadow text-sm font-medium text-gray-800 backdrop-blur">
+
+      <div
+        className="absolute bottom-0 w-full
+        bg-gradient-to-t from-black/70 to-transparent  
+        text-white text-center py-3
+        text-base font-semibold tracking-wide"
+      >
         {name}
       </div>
     </div>
   );
-}
+};
 
 export default CategoryCard;

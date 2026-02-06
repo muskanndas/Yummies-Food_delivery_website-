@@ -85,6 +85,8 @@ const UserDashBoard = () => {
     }
   };
 
+  
+
   return (
     <div className="w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto">
       <Nav />
@@ -98,7 +100,7 @@ const UserDashBoard = () => {
           {/* left button */}
           {showLeftCateButton && (
             <button
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#C93B2B] z-10"
               onClick={() => scrollHandler(cateScrollRef, "left")}
             >
               <FaCircleChevronLeft />
@@ -122,7 +124,7 @@ const UserDashBoard = () => {
           {/* right button  */}
           {showRightCateButton && (
             <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#C93B2B] z-10"
               onClick={() => scrollHandler(cateScrollRef, "right")}
             >
               <FaCircleChevronRight />
@@ -140,7 +142,7 @@ const UserDashBoard = () => {
           {/* left button */}
           {showLeftShopButton && (
             <button
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#C93B2B] z-10"
               onClick={() => scrollHandler(shopScrollRef, "left")}
             >
               <FaCircleChevronLeft />
@@ -164,7 +166,7 @@ const UserDashBoard = () => {
           {/*  right button  */}
           {showRightShopButton && (
             <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#C93B2B] z-10"
               onClick={() => scrollHandler(shopScrollRef, "right")}
             >
               <FaCircleChevronRight />
@@ -173,17 +175,29 @@ const UserDashBoard = () => {
         </div>
       </div>
 
-      {/* food items */}
-      <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-       <h1 className='text-gray-800 text-2xl sm:text-3xl'>
-        Suggested Food Items
-       </h1>
+      {/* Food Items Section */}
+<div className="w-full max-w-6xl flex flex-col gap-6 items-start px-4">
+  <h1 className="text-gray-800 text-2xl sm:text-3xl">
+    Suggested Food Items
+  </h1>
 
-       <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
-        {itemsInMyCity?.map((item,index)=>(
-         <FoodCard key={index} data={item}/> ))}
-       </div>
-       </div>
+  {/* Responsive Grid Layout */}
+  <div
+    className="
+    w-full
+    grid
+    gap-6
+    grid-cols-1
+    sm:grid-cols-2
+    md:grid-cols-3
+    lg:grid-cols-4
+    "
+  >
+    {itemsInMyCity?.map((item, index) => (
+      <FoodCard key={index} data={item} />
+    ))}
+  </div>
+</div>
     </div>
   );
 };

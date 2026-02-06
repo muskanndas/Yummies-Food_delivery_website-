@@ -8,87 +8,114 @@ import { FaPlus } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 
 const FoodCard = ({ data }) => {
-   if (!data) return null;
+  if (!data) return null;
+
   const [quantity, setQuantity] = useState(0);
+
   const renderStars = (rating) => {
-    //r=3
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         i <= rating ? (
-          <FaStar className="text-yellow-500 text-lg" />
+          <FaStar key={i} className="text-amber-400 text-sm" />
         ) : (
-          <FaRegStar className="text-yellow-500 text-lg" />
-        ),
+          <FaRegStar key={i} className="text-amber-300 text-sm" />
+        )
       );
     }
     return stars;
   };
 
-  const handleIncrease = () => {
-    const newQty = quantity + 1;
-    setQuantity(newQty);
-  };
+  const handleIncrease = () => setQuantity(quantity + 1);
   const handleDecrease = () => {
-    if (quantity > 0) {
-      const newQty = quantity - 1;
-      setQuantity(newQty);
-    }
+    if (quantity > 0) setQuantity(quantity - 1);
   };
 
   return (
-    <div className="w-[250px] rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-      <div className="relative w-full h-[170px] flex justify-center items-center bg-white">
-        {/* icon on food item */}
-        <div className="absolute top-3 right-3 bg-white rounded-full p-1 shadow">
-          {data.foodtype === "Veg" ? (
-            <FaLeaf className="text-green-600 text-lg" />
-          ) : (
-            <FaDrumstickBite className="text-red-600 text-lg" />
-          )}
-        </div>
-
-        {/* image of fooditem */}
+    <div
+      className="w-full bg-white rounded-2xl
+      border border-gray-100
+      shadow-sm hover:shadow-lg
+      transition-all duration-300
+      flex flex-col overflow-hidden"
+    >
+      {/* Image Section */}
+      <div className="relative w-full h-[210px] overflow-hidden">
         <img
           src={data.image}
           alt=""
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full object-cover transition duration-500 hover:scale-105"
         />
-      </div>
-      {/* food item name  */}
-      <div className="flex-1 flex flex-col p-4">
-        <h1 className="font-semibold text-gray-900 text-base truncate">
-          {data.name}
-        </h1>
 
-        {/*Rating   */}
-        <div className="flex items-center gap-1 mt-1">
-          {renderStars(data.rating?.average || 0)}
-          <span className="text-xs text-gray-500">
-            {data.rating?.count || 0}
-          </span>
+        {/* Food Type Badge */}
+        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm
+          px-3 py-1 rounded-full shadow-sm text-xs font-medium flex items-center gap-1">
+          {data.foodtype === "Veg" ? (
+            <>
+              <FaLeaf className="text-green-600" />
+              Veg
+            </>
+          ) : (
+            <>
+              <FaDrumstickBite className="text-red-600" />
+              Non-Veg
+            </>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center border rounded-full overflow-hidden shadow-sm">
-        <button
-          className="px-2 py-1 hover:bg-gray-100 transition"
-          onClick={handleDecrease}
-        >
-          <FaMinus size={12} />
-        </button>
+      {/* Content */}
+      <div className="flex flex-col flex-1 px-6 py-5 space-y-3">
 
-        <span>{quantity}</span>
-        <button
-          className="px-2 py-1 hover:bg-gray-100 transition"
-          onClick={handleIncrease}
-        >
-          <FaPlus size={12} />
-        </button>
+        <h1 className="text-gray-900 text-lg font-semibold tracking-tight">
+          {data.name}
+        </h1>
 
-        <button className="bg-[#C93B2B] text-white px-3 py-2 transition-colors">
-          <FaShoppingCart/>
-        </button>
+        {/* Rating */}
+        <div className="flex items-center justify-between">
+          <div className="flex gap-1">
+            {renderStars(data.rating?.average || 0)}
+          </div>
+          <span className="text-sm text-gray-500">
+            {data.rating?.count || 0} reviews
+          </span>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
+
+          {/* Quantity Selector */}
+          <div className="flex items-center gap-3 text-sm">
+            <button
+              onClick={handleDecrease}
+              className="w-8 h-8 rounded-full border border-gray-200
+              flex items-center justify-center hover:bg-gray-50 transition"
+            >
+              <FaMinus size={10} />
+            </button>
+
+            <span className="font-medium text-gray-700">
+              {quantity}
+            </span>
+
+            <button
+              onClick={handleIncrease}
+              className="w-8 h-8 rounded-full border border-gray-200
+              flex items-center justify-center hover:bg-gray-50 transition"
+            >
+              <FaPlus size={10} />
+            </button>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            className="px-4 py-2 rounded-full
+            bg-[#C93B2B] text-white text-sm
+            hover:bg-black transition shadow-sm"
+          >
+            <FaShoppingCart />
+          </button>
+        </div>
       </div>
     </div>
   );
