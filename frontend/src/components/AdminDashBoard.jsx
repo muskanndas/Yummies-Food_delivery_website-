@@ -5,6 +5,7 @@ import { GoArrowRight } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { RiPencilFill } from "react-icons/ri";
 import { FiPlus } from "react-icons/fi";
+import AdminItemCard from "./AdminItemCard";
 // import { FaUtensils } from "react-icons/fa6";
 const AdminDashBoard = () => {
   const yellow = "#E6B800";
@@ -184,6 +185,18 @@ const AdminDashBoard = () => {
               </button>
             </div>
           )}
+
+          {/* FOOD ITEMS LIST SECTION  */}
+          {myshopdata?.items?.length > 0 && (
+            <div className=" flex flex-col items-center gap-4 w-full max-w-4xl ">
+                {myshopdata.items.map((item, index) => (
+                  <AdminItemCard key={index} data={item} />
+                ))}
+              </div>
+            
+          )}
+
+
 
         </div>
       )}

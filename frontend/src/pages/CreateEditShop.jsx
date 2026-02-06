@@ -114,6 +114,7 @@ const CreateEditShop = () => {
                          file:text-white 
                          file:px-4 
                          file:py-2 
+                         file:cursor-pointer
                          file:rounded-lg 
                          file:border-none 
                          file:mr-4 

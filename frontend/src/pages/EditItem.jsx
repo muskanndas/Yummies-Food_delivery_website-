@@ -1,23 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { MdFastfood } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setMyShopData } from "../redux/adminSlice";
-import { ClipLoader } from 'react-spinners';
-
-const AddItem = () => {
+import { ClipLoader } from "react-spinners";
+const EditItem = () => {
   const navigate = useNavigate();
   const { myshopdata } = useSelector((state) => state.admininfo);
-  const { id } = useParams(); // for edit
+  const { itemId } = useParams(); //  MUST match backend route
+  const [currentItem, setCurrentItem] = useState(null);
   const dispatch = useDispatch();
-
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [category, setCategory] = useState("");
-  const [loading,setLoading]=useState(false)
   const categories = [
     "Snacks",
     "Main Course",
@@ -31,10 +27,64 @@ const AddItem = () => {
     "Fast Food",
     "Others",
   ];
-  const [foodtype, setFoodtype] = useState("Veg");
 
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [category, setCategory] = useState("");
+  const [foodtype, setFoodtype] = useState("Veg");
   const [frontendImage, setFrontendImage] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  // // FETCH CURRENT ITEM
+  // useEffect(() => {
+  //   const fetchItem = async () => {
+  //     try {
+  //       const result = await axios.get(
+  //         `${serverUrl}/api/item/get-item/${itemId}`,
+  //         { withCredentials: true }
+  //       );
+
+  //       const item = result.data;
+
+  //       //  Set form values from backend
+  //       setName(item.name);
+  //       setPrice(item.price);
+  //       setCategory(item.category);
+  //       setFoodtype(item.foodtype);
+  //       setFrontendImage(item.image);
+
+  //     } catch (error) {
+  //       console.log("Get item error:", error);
+  //     }
+  //   };
+
+  //   fetchItem();
+  // }, [itemId]);
+
+  useEffect(() => {
+    const handelGetItemById = async () => {
+      try {
+        const result = await axios.get(
+          `${serverUrl}/api/item/get-item/${itemId}`,
+          { withCredentials: true },
+        );
+        setCurrentItem(result.data);
+      } catch (error) {
+        console.log("Get item by id error:", error);
+      }
+    };
+    handelGetItemById();
+  }, [itemId]);
+
+  useEffect(() => {
+    if (currentItem) {
+      setName(currentItem?.name || "");
+      setPrice(currentItem?.price || 0);
+      setCategory(currentItem?.category || "");
+      setFoodtype(currentItem?.foodtype || "Veg");
+      setFrontendImage(currentItem?.image || null);
+    }
+  }, [currentItem]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -42,9 +92,10 @@ const AddItem = () => {
     setFrontendImage(URL.createObjectURL(file));
   };
 
+  // UPDATE ITEM
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
+ setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -55,8 +106,9 @@ const AddItem = () => {
       if (backendImage) {
         formData.append("image", backendImage);
       }
-      const result = await axios.post(
-        `${serverUrl}/api/item/add-item`,
+
+      const result = await axios.put(
+        `${serverUrl}/api/item/edit-item/${itemId}`,
         formData,
         {
           withCredentials: true,
@@ -66,30 +118,13 @@ const AddItem = () => {
         },
       );
       dispatch(setMyShopData(result.data));
-      setLoading(false)
+        setLoading(false);
+      // console.log("Item updated successfully");
+      // console.log(result.data);
       navigate("/");
-      //  console.log("Item added successfully:", result.data);
-
-      // if (id) {
-      //   // EDIT
-      //   await axios.put(
-      //     `${serverUrl}/api/item/edit-item/${id}`,
-      //     formData,
-      //     { withCredentials: true }
-      //   );
-      // } else {
-      //   // ADD
-      //   await axios.post(
-      //     `${serverUrl}/api/item/add-item`,
-      //     formData,
-      //     { withCredentials: true }
-      //   );
-      // }
-
-      
     } catch (error) {
-      console.log("Item error:", error);
-      setLoading(false)
+      console.log("Edit item error:", error);
+      setLoading(false);
     }
   };
 
@@ -110,7 +145,7 @@ const AddItem = () => {
           </div>
 
           <h1 className="text-3xl font-semibold text-center text-[#C93B2B]">
-            {id ? "Edit Food Item" : "Add Food Item"}
+            Edit Food Item
           </h1>
         </div>
 
@@ -120,8 +155,7 @@ const AddItem = () => {
             <label className="font-medium text-gray-700">Food Name</label>
             <input
               type="text"
-              placeholder="Enter food name"
-              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B] focus:ring-2 focus:ring-[#ff4d2d]/20"
+              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B]"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -133,14 +167,27 @@ const AddItem = () => {
             <input
               type="file"
               onChange={handleImageChange}
-              className="border border-gray-300 rounded-xl p-3 file:bg-[#C93B2B] file:text-white file:px-4 file:py-2 file:rounded-lg file:border-none file:mr-4 hover:file:bg-[#a83224]"
+              className="border border-gray-300 rounded-xl p-3 
+                         file:bg-[#C93B2B] 
+                         file:text-white 
+                         file:px-4 
+                         file:py-2 
+                         file:cursor-pointer
+                         file:rounded-lg 
+                         file:border-none 
+                         file:mr-4 
+                         hover:file:bg-[#a83224] 
+                         transition duration-200"
             />
+
             {frontendImage && (
-              <img
-                src={frontendImage}
-                alt="preview"
-                className="w-full h-40 object-cover rounded-lg border mt-3"
-              />
+              <div className="mt-4">
+                <img
+                  src={frontendImage}
+                  alt="preview"
+                  className="w-full h-48 object-cover rounded-lg border"
+                />
+              </div>
             )}
           </div>
 
@@ -149,8 +196,7 @@ const AddItem = () => {
             <label className="font-medium text-gray-700">Price</label>
             <input
               type="number"
-              placeholder="0"
-              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B] focus:ring-2 focus:ring-[#ff4d2d]/20"
+              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B]"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
@@ -160,7 +206,7 @@ const AddItem = () => {
           <div className="flex flex-col gap-2">
             <label className="font-medium text-gray-700">Category</label>
             <select
-              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B]"
+              className="border border-gray-300 rounded-xl p-3"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -177,7 +223,7 @@ const AddItem = () => {
           <div className="flex flex-col gap-2">
             <label className="font-medium text-gray-700">Food Type</label>
             <select
-              className="border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#C93B2B]"
+              className="border border-gray-300 rounded-xl p-3"
               value={foodtype}
               onChange={(e) => setFoodtype(e.target.value)}
             >
@@ -188,8 +234,10 @@ const AddItem = () => {
 
           <button
             type="submit"
-            className="bg-[#C93B2B] hover:bg-[#a83224] text-white py-3 rounded-xl font-semibold text-lg shadow-md transition-all duration-300 hover:scale-[1.02]" disabled={loading}>
-                      {loading?<ClipLoader size={20} color='white' />:"Save Item"}
+            className="bg-[#C93B2B] hover:bg-[#a83224] text-white py-3 rounded-xl font-semibold text-lg"
+            disabled={loading}
+          >
+            {loading ? <ClipLoader size={20} color="white" /> : "Update Item"}
           </button>
         </form>
       </div>
@@ -197,4 +245,4 @@ const AddItem = () => {
   );
 };
 
-export default AddItem;
+export default EditItem;
